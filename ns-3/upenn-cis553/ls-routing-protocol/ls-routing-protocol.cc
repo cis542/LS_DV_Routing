@@ -20,6 +20,9 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+
+
+
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-header.h"
@@ -67,6 +70,7 @@ LSRoutingProtocol::LSRoutingProtocol ()
   m_currentSequenceNumber = random.GetInteger ();
   // Setup static routing 
   m_staticRouting = Create<Ipv4StaticRouting> ();
+  NeighborTable = std::vector<struct nghbrTabEntry> ();
 }
 
 LSRoutingProtocol::~LSRoutingProtocol ()
@@ -98,7 +102,7 @@ LSRoutingProtocol::DoDispose ()
 void
 LSRoutingProtocol::SetMainInterface (uint32_t mainInterface)
 {
-  m_mainAddress = m_ipv4->GetAddress (mainInterface, 0).GetLocal ();
+  m_mainAddress = m_ipv4->GetAddress (mainInterface, 0).GetLocal();
 }
 
 void
@@ -256,7 +260,7 @@ LSRoutingProtocol::ProcessCommand (std::vector<std::string> tokens)
       if (destAddress != Ipv4Address::GetAny ())
         {
           uint32_t sequenceNumber = GetNextSequenceNumber ();
-          TRAFFIC_LOG ("Sending PING_REQ to Node: " << nodeNumber << " IP: " << destAddress << " Message: " << pingMessage << " SequenceNumber: " << sequenceNumber);
+          TRAFFIC_LOG ("Lanlan Sending PING_REQ to Node: " << nodeNumber << " IP: " << destAddress << " Message: " << pingMessage << " SequenceNumber: " << sequenceNumber);
           Ptr<PingRequest> pingRequest = Create<PingRequest> (sequenceNumber, Simulator::Now(), destAddress, pingMessage);
           // Add to ping-tracker
           m_pingTracker.insert (std::make_pair (sequenceNumber, pingRequest));
@@ -302,13 +306,36 @@ LSRoutingProtocol::DumpLSA ()
 void
 LSRoutingProtocol::DumpNeighbors ()
 {
-  STATUS_LOG (std::endl << "**************** Neighbor List ********************" << std::endl
-              << "NeighborNumber\t\tNeighborAddr\t\tInterfaceAddr");
-  PRINT_LOG ("");
+  uint32_t sequenceNumber = GetNextSequenceNumber ();
+  std::string hello = "hello";
+  TRAFFIC_LOG ("Lanlan Sending Discovering to Neighbors: " << " Message: " << hello << " SequenceNumber: " << sequenceNumber);
+  //  Ptr<PingRequest> pingRequest = Create<PingRequest> (sequenceNumber, Simulator::Now(), destAddress, pingMessage);
+  // Add to ping-tracker
+  //m_pingTracker.insert (std::make_pair (sequenceNumber, pingRequest));
+  Ptr<Packet> packet = Create<Packet> ();
+  LSMessage lsMessage = LSMessage (LSMessage::DSCVR_NGHBR, sequenceNumber, m_maxTTL, m_mainAddress);
+  //for discovering, specified destination ip is not used, set to 0.0.0.0
+  lsMessage.SetDscvrNghbr (Ipv4Address::GetAny (), hello);
+  //set time to live equal to 1;
+  lsMessage.SetTTL(1);
+  packet->AddHeader (lsMessage);
+  BroadcastPacket (packet);
 
+  
   /*NOTE: For purpose of autograding, you should invoke the following function for each
   neighbor table entry. The output format is indicated by parameter name and type.
   */
+    //find_neighbor = true;
+  sleep(1);
+  STATUS_LOG (std::endl << "**************** Neighbor List ********************" << std::endl
+                << "NeighborNumber\t\tNeighborAddr\t\tInterfaceAddr");
+  int i;
+  for (i = 0; i < NeighborTable.size(); i++) {
+    PRINT_LOG (std::endl << "\t" << NeighborTable[i].num_node << "\t\t" << NeighborTable[i].nghbr_address<< "\t\t Working on this term...");
+  }
+  if (i == 0) {
+    PRINT_LOG ("No Neighbor Discovering");
+  }
   //  checkNeighborTableEntry();
 }
 
@@ -333,30 +360,69 @@ LSRoutingProtocol::RecvLSMessage (Ptr<Socket> socket)
   InetSocketAddress inetSocketAddr = InetSocketAddress::ConvertFrom (sourceAddr);
   Ipv4Address sourceAddress = inetSocketAddr.GetIpv4 ();
   LSMessage lsMessage;
-  packet->RemoveHeader (lsMessage);
 
+  packet->RemoveHeader (lsMessage);
+  
   switch (lsMessage.GetMessageType ())
     {
-      case LSMessage::PING_REQ:
-        ProcessPingReq (lsMessage);
-        break;
-      case LSMessage::PING_RSP:
-        ProcessPingRsp (lsMessage);
-        break;
-      default:
-        ERROR_LOG ("Unknown Message Type!");
-        break;
+    case LSMessage::DSCVR_NGHBR: 
+      ProcessDscvrNghbr(lsMessage);
+      break;
+    case LSMessage::NGHBR_RSP: 
+      ProcessNghbrRsp(lsMessage);
+      break;
+    case LSMessage::PING_REQ:
+      ProcessPingReq (lsMessage);
+      break;
+    case LSMessage::PING_RSP:
+      ProcessPingRsp (lsMessage);
+      break;
+    default:
+      ERROR_LOG ("Unknown Message Type!");
+      break;
     }
+}
+//recev Nghbr reply and add to neighbour table;
+void 
+LSRoutingProtocol::ProcessNghbrRsp (LSMessage lsMessage)
+{
+  if (IsOwnAddress(lsMessage.GetNghbrRply().destinationAddress)) {
+    std::string num_Neighbor = ReverseLookup (lsMessage.GetOriginatorAddress ());
+    struct nghbrTabEntry nte;
+    nte.num_node = num_Neighbor;
+    nte.nghbr_address = lsMessage.GetOriginatorAddress ();
+    NeighborTable.push_back(nte);
+    TRAFFIC_LOG ("discovered a Neighbor" << "Node: " << num_Neighbor);
+  }
+}
+
+void
+LSRoutingProtocol::ProcessDscvrNghbr (LSMessage lsMessage)
+{
+      if ((lsMessage.GetDscvrNghbr().destinationAddress) == Ipv4Address::GetAny()) 
+        {
+          std::string fromNode = ReverseLookup (lsMessage.GetOriginatorAddress ());  
+
+          // Use reverse lookup for ease of debug
+          TRAFFIC_LOG ("Received Neighbor Discovering For Node: " << fromNode << ", Message: " << lsMessage.GetDscvrNghbr().pingMessage);
+          // Send Neighbor Reply
+          LSMessage lsdn = LSMessage (LSMessage::NGHBR_RSP, lsMessage.GetSequenceNumber(), m_maxTTL, m_mainAddress);
+          std::string pingMessage = "hello reply";
+          lsdn.SetNghbrRply (lsMessage.GetOriginatorAddress(), pingMessage);
+          Ptr<Packet> packet = Create<Packet> ();
+          packet->AddHeader (lsdn);
+          BroadcastPacket(packet);
+      }
 }
 
 void
 LSRoutingProtocol::ProcessPingReq (LSMessage lsMessage)
 {
+  std::string fromNode = ReverseLookup (lsMessage.GetOriginatorAddress ());  
   // Check destination address
   if (IsOwnAddress (lsMessage.GetPingReq().destinationAddress))
     {
       // Use reverse lookup for ease of debug
-      std::string fromNode = ReverseLookup (lsMessage.GetOriginatorAddress ());
       TRAFFIC_LOG ("Received PING_REQ, From Node: " << fromNode << ", Message: " << lsMessage.GetPingReq().pingMessage);
       // Send Ping Response
       LSMessage lsResp = LSMessage (LSMessage::PING_RSP, lsMessage.GetSequenceNumber(), m_maxTTL, m_mainAddress);
@@ -365,8 +431,11 @@ LSRoutingProtocol::ProcessPingReq (LSMessage lsMessage)
       packet->AddHeader (lsResp);
       BroadcastPacket (packet);
     }
+  else {
+    //TRAFFIC_LOG("no connection to Node" << fromNode);
+  }
 }
-
+//recv ping response;
 void
 LSRoutingProtocol::ProcessPingRsp (LSMessage lsMessage)
 {
@@ -460,3 +529,4 @@ LSRoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   m_ipv4 = ipv4;
   m_staticRouting->SetIpv4 (m_ipv4);
 }
+

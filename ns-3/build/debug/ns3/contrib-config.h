@@ -7,11 +7,12 @@
 #define HAVE_SIGNAL_H 1
 #define HAVE_PTHREAD_H 1
 /* #undef HAVE_UINT128_T */
-#define HAVE___UINT128_T 1
-#define USE_HIGH_PRECISION_128 1
+/* #undef HAVE___UINT128_T */
+#define USE_HIGH_PRECISION_CAIRO 1
 #define HAVE_STDINT_H 1
 #define HAVE_INTTYPES_H 1
 /* #undef HAVE_SYS_INT_TYPES_H */
-/* #undef HAVE_PACKET_H */
-/* #undef HAVE_IF_TUN_H */
+#define HAVE_PACKET_H 1
+#define HAVE_IF_TUN_H 1
+#define HAVE_LIBXML2 1
 #endif /* _NS3_CONTRIB_CONFIG_H_WAF */

@@ -7,5 +7,6 @@
     
 
 // Module headers:
+#include "emu-net-device.h"
 #include "emu.h"
 #endif

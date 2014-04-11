@@ -7,5 +7,6 @@
     
 
 // Module headers:
+#include "tap-bridge.h"
 #include "tap.h"
 #endif

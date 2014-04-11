@@ -15,6 +15,7 @@
  */
 
 #include "ns3/ls-message.h"
+
 #include "ns3/log.h"
 
 using namespace ns3;
@@ -44,7 +45,7 @@ LSMessage::GetTypeId (void)
   static TypeId tid = TypeId ("LSMessage")
     .SetParent<Header> ()
     .AddConstructor<LSMessage> ()
-  ;
+    ;
   return tid;
 }
 
@@ -62,14 +63,20 @@ LSMessage::GetSerializedSize (void) const
   uint32_t size = sizeof (uint8_t) + sizeof (uint32_t) + IPV4_ADDRESS_SIZE + sizeof (uint8_t);
   switch (m_messageType)
     {
-      case PING_REQ:
-        size += m_message.pingReq.GetSerializedSize ();
-        break;
-      case PING_RSP:
-        size += m_message.pingRsp.GetSerializedSize ();
-        break;
-      default:
-        NS_ASSERT (false);
+    case PING_REQ:
+      size += m_message.pingReq.GetSerializedSize ();
+      break;
+    case PING_RSP:
+      size += m_message.pingRsp.GetSerializedSize ();
+      break;
+    case DSCVR_NGHBR:
+      size += m_message.pingReq.GetSerializedSize ();
+      break;
+    case NGHBR_RSP:
+      size += m_message.pingRsp.GetSerializedSize ();
+      break;
+    default:
+      NS_ASSERT (false);
     }
   return size;
 }
@@ -86,14 +93,14 @@ LSMessage::Print (std::ostream &os) const
   
   switch (m_messageType)
     {
-      case PING_REQ:
-        m_message.pingReq.Print (os);
-        break;
-      case PING_RSP:
-        m_message.pingRsp.Print (os);
-        break;
-      default:
-        break;  
+    case PING_REQ:
+      m_message.pingReq.Print (os);
+      break;
+    case PING_RSP:
+      m_message.pingRsp.Print (os);
+      break;
+    default:
+      break;  
     }
   os << "\n****END OF MESSAGE****\n";
 }
@@ -109,14 +116,20 @@ LSMessage::Serialize (Buffer::Iterator start) const
 
   switch (m_messageType)
     {
-      case PING_REQ:
-        m_message.pingReq.Serialize (i);
-        break;
-      case PING_RSP:
-        m_message.pingRsp.Serialize (i);
-        break;
-      default:
-        NS_ASSERT (false);   
+    case PING_REQ:
+      m_message.pingReq.Serialize (i);
+      break;
+    case PING_RSP:
+      m_message.pingRsp.Serialize (i);
+      break;
+    case DSCVR_NGHBR:
+      m_message.pingReq.Serialize (i);
+      break;
+    case NGHBR_RSP:
+      m_message.pingRsp.Serialize (i);      
+      break;
+    default:
+      NS_ASSERT (false);   
     }
 }
 
@@ -134,14 +147,20 @@ LSMessage::Deserialize (Buffer::Iterator start)
 
   switch (m_messageType)
     {
-      case PING_REQ:
-        size += m_message.pingReq.Deserialize (i);
-        break;
-      case PING_RSP:
-        size += m_message.pingRsp.Deserialize (i);
-        break;
-      default:
-        NS_ASSERT (false);
+    case PING_REQ:
+      size += m_message.pingReq.Deserialize (i);
+      break;
+    case PING_RSP:
+      size += m_message.pingRsp.Deserialize (i);
+      break;
+    case DSCVR_NGHBR:
+      size += m_message.pingReq.Deserialize (i);
+      break;
+    case NGHBR_RSP:
+      size += m_message.pingRsp.Deserialize (i);
+      break;
+    default:
+      NS_ASSERT (false);
     }
   return size;
 }
@@ -260,6 +279,46 @@ LSMessage::GetPingRsp ()
   return m_message.pingRsp;
 }
 
+//discovering neighbors
+void
+LSMessage::SetNghbrRply (Ipv4Address destinationAddress, std::string hellorply)
+{
+  if (m_messageType == 0)
+    {
+      m_messageType = NGHBR_RSP;
+    }
+  else
+    {
+      NS_ASSERT (m_messageType == NGHBR_RSP);
+    }
+  m_message.pingRsp.destinationAddress = destinationAddress;
+  m_message.pingRsp.pingMessage = hellorply;
+}
+
+void
+LSMessage::SetDscvrNghbr (Ipv4Address destinationAddress, std::string hello)
+{
+  if (m_messageType == 0)
+    {
+      m_messageType = DSCVR_NGHBR;
+    }
+  else
+    {
+      NS_ASSERT (m_messageType == DSCVR_NGHBR);
+    }
+  m_message.pingReq.destinationAddress = destinationAddress;
+  m_message.pingReq.pingMessage = hello;
+}
+
+LSMessage::PingRsp
+LSMessage::GetNghbrRply () {
+  return m_message.pingRsp;
+}
+
+LSMessage::PingReq
+LSMessage::GetDscvrNghbr () {
+  return m_message.pingReq;
+}
 
 //
 //
@@ -313,3 +372,4 @@ LSMessage::GetOriginatorAddress (void) const
   return m_originatorAddress;
 }
 
+

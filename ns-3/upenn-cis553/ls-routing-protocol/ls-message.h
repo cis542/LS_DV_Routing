@@ -28,136 +28,158 @@ using namespace ns3;
 
 class LSMessage : public Header
 {
-  public:
-    LSMessage ();
-    virtual ~LSMessage ();
+public:
+  LSMessage ();
+  virtual ~LSMessage ();
 
 
-    enum MessageType
-      {
-        PING_REQ = 1,
-        PING_RSP = 2,
-        // Define extra message types when needed       
-      };
+  enum MessageType
+    {
+      PING_REQ = 1,
+      PING_RSP = 2,
+      DSCVR_NGHBR = 3,
+      NGHBR_RSP = 4,
+      // Define extra message types when needed       
+    };
+  
+  LSMessage (LSMessage::MessageType messageType, uint32_t sequenceNumber, uint8_t ttl, Ipv4Address originatorAddress);
 
-    LSMessage (LSMessage::MessageType messageType, uint32_t sequenceNumber, uint8_t ttl, Ipv4Address originatorAddress);
+  /**
+   *  \brief Sets message type
+   *  \param messageType message type
+   */
+  void SetMessageType (MessageType messageType);
 
-    /**
-    *  \brief Sets message type
-    *  \param messageType message type
-    */
-    void SetMessageType (MessageType messageType);
+  /**
+   *  \returns message type
+   */
+  MessageType GetMessageType () const;
 
-    /**
-     *  \returns message type
-     */
-    MessageType GetMessageType () const;
+  /**
+   *  \brief Sets Sequence Number
+   *  \param sequenceNumber Sequence Number of the request
+   */
+  void SetSequenceNumber (uint32_t sequenceNumber);
 
-    /**
-     *  \brief Sets Sequence Number
-     *  \param sequenceNumber Sequence Number of the request
-     */
-    void SetSequenceNumber (uint32_t sequenceNumber);
+  /**
+   *  \returns Sequence Number
+   */
+  uint32_t GetSequenceNumber () const;
 
-    /**
-     *  \returns Sequence Number
-     */
-    uint32_t GetSequenceNumber () const;
+  /**
+   *  \brief Sets Originator IP Address
+   *  \param originatorAddress Originator IPV4 address
+   */
+  void SetOriginatorAddress (Ipv4Address originatorAddress);
 
-    /**
-     *  \brief Sets Originator IP Address
-     *  \param originatorAddress Originator IPV4 address
-     */
-    void SetOriginatorAddress (Ipv4Address originatorAddress);
+  /** 
+   *  \returns Originator IPV4 address
+   */
+  Ipv4Address GetOriginatorAddress () const;
 
-    /** 
-     *  \returns Originator IPV4 address
-     */
-    Ipv4Address GetOriginatorAddress () const;
+  /**
+   *  \brief Sets Time To Live of the message 
+   *  \param ttl TTL of the message
+   */
+  void SetTTL (uint8_t ttl);
 
-    /**
-     *  \brief Sets Time To Live of the message 
-     *  \param ttl TTL of the message
-     */
-    void SetTTL (uint8_t ttl);
+  /** 
+   *  \returns TTL of the message
+   */
+  uint8_t GetTTL () const;
 
-    /** 
-     *  \returns TTL of the message
-     */
-    uint8_t GetTTL () const;
+private:
+  /**
+   *  \cond
+   */
+  MessageType m_messageType;
+  uint32_t m_sequenceNumber;
+  Ipv4Address m_originatorAddress;
+  uint8_t m_ttl;
+  /**
+   *  \endcond
+   */
+public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
-  private:
-    /**
-     *  \cond
-     */
-    MessageType m_messageType;
-    uint32_t m_sequenceNumber;
-    Ipv4Address m_originatorAddress;
-    uint8_t m_ttl;
-    /**
-     *  \endcond
-     */
-  public:
-    static TypeId GetTypeId (void);
-    virtual TypeId GetInstanceTypeId (void) const;
+    
+  struct PingReq
+  {
     void Print (std::ostream &os) const;
     uint32_t GetSerializedSize (void) const;
-    void Serialize (Buffer::Iterator start) const;
-    uint32_t Deserialize (Buffer::Iterator start);
+    void Serialize (Buffer::Iterator &start) const;
+    uint32_t Deserialize (Buffer::Iterator &start);
+    // Payload
+    Ipv4Address destinationAddress;
+    std::string pingMessage;
+  };
 
+  struct PingRsp
+  {
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator &start) const;
+    uint32_t Deserialize (Buffer::Iterator &start);
+    // Payload
+    Ipv4Address destinationAddress;
+    std::string pingMessage;
+  };
+  
+  //for discover neighbor signal
+  //discovering has no specified destination
+  struct DscvrNghbr {
+    Ipv4Address destinationAddress;    
+    std::string hello;
+  };
+  
+  //for neighbor reply signal
+  struct NghbrRply {
+    Ipv4Address destinationAddress;
+    std::string hellorply;
+  };
+private:
+  struct
+  {
+    PingReq pingReq;
+    PingRsp pingRsp;
+  } m_message;
     
-    struct PingReq
-      {
-        void Print (std::ostream &os) const;
-        uint32_t GetSerializedSize (void) const;
-        void Serialize (Buffer::Iterator &start) const;
-        uint32_t Deserialize (Buffer::Iterator &start);
-        // Payload
-        Ipv4Address destinationAddress;
-        std::string pingMessage;
-      };
+public:
+  /**
+   *  \returns PingReq Struct
+   */
+  PingReq GetPingReq ();
 
-    struct PingRsp
-      {
-        void Print (std::ostream &os) const;
-        uint32_t GetSerializedSize (void) const;
-        void Serialize (Buffer::Iterator &start) const;
-        uint32_t Deserialize (Buffer::Iterator &start);
-        // Payload
-        Ipv4Address destinationAddress;
-        std::string pingMessage;
-      };
+  /* \returns discover neighbor struct
+   */
+  PingReq GetDscvrNghbr ();
+  
+  void SetDscvrNghbr (Ipv4Address destinationAddress, std::string hello);
+  
+  PingRsp GetNghbrRply ();
 
+  void SetNghbrRply (Ipv4Address destinationAddress, std::string hellorply);
+  /**
+   *  \brief Sets PingReq message params
+   *  \param message Payload String
+   */
 
-  private:
-    struct
-      {
-        PingReq pingReq;
-        PingRsp pingRsp;
-      } m_message;
-    
-  public:
-    /**
-     *  \returns PingReq Struct
-     */
-    PingReq GetPingReq ();
+  void SetPingReq (Ipv4Address destinationAddress, std::string message);
 
-    /**
-     *  \brief Sets PingReq message params
-     *  \param message Payload String
-     */
-
-    void SetPingReq (Ipv4Address destinationAddress, std::string message);
-
-    /**
-     * \returns PingRsp Struct
-     */
-    PingRsp GetPingRsp ();
-    /**
-     *  \brief Sets PingRsp message params
-     *  \param message Payload String
-     */
-    void SetPingRsp (Ipv4Address destinationAddress, std::string message);
+  /**
+   * \returns PingRsp Struct
+   */
+  PingRsp GetPingRsp ();
+  /**
+   *  \brief Sets PingRsp message params
+   *  \param message Payload String
+   */
+  void SetPingRsp (Ipv4Address destinationAddress, std::string message);
 
 }; // class LSMessage
 
@@ -168,3 +190,4 @@ static inline std::ostream& operator<< (std::ostream& os, const LSMessage& messa
 }
 
 #endif
+

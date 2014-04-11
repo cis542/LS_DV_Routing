@@ -1,5 +1,5 @@
-# project ns (3.9) configured on Sun Apr  6 15:59:18 2014 by
-# waf 1.5.16 (abi 7, python 20706f0 on darwin)
+# project ns (3.9) configured on Sun Apr  6 22:47:24 2014 by
+# waf 1.5.16 (abi 7, python 20703f0 on linux2)
 # using ./waf
 #
 
@@ -33,17 +33,40 @@ Checking for program g++ or c++
   -> '/usr/bin/g++'
 
 ----------------------------------------
+Checking for program ar
+  find program=['ar'] paths=[] var='AR'
+  -> '/usr/bin/ar'
+
+----------------------------------------
+Checking for program ranlib
+  find program=['ranlib'] paths=[] var='RANLIB'
+  -> '/usr/bin/ranlib'
+
+----------------------------------------
 Checking for g++ 
 ok 
 
 ----------------------------------------
 Checking for program pkg-config
   find program=['pkg-config'] paths=[] var='PKG_CONFIG'
-  -> ''
+  -> '/usr/bin/pkg-config'
 
 -----------------------------------------
 Checking for regression reference traces 
 not found
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mcxx: build/.conf_check_0/test.cc -> build/.conf_check_0/testbuild/debug/test_1.o
+[0m['/usr/bin/g++', '-O0', '-g0', '-Wl,--soname=foo', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cc', '-c', '-o', 'debug/test_1.o']
+[2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+
+-----------------------------------------
+Checking for -Wl,--soname=foo support
+yes
 
 -----------------------------------------
 Checking for header stdlib.h
@@ -58,7 +81,7 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 yes
 
 -----------------------------------------
@@ -74,7 +97,7 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 yes
 
 -----------------------------------------
@@ -91,9 +114,9 @@ int main ()
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/g++', '-O0', '-g0', '-pthread', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-pthread']
 yes
 
 -----------------------------------------
@@ -108,16 +131,11 @@ int main() {
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m../test.cpp:4:7: error: use of undeclared identifier 'uint128_t'
-        if ((uint128_t *) 0) return 0;
-             ^
-../test.cpp:4:18: error: expected expression
-        if ((uint128_t *) 0) return 0;
-                        ^
-../test.cpp:5:14: error: use of undeclared identifier 'uint128_t'
-        if (sizeof (uint128_t)) return 0;
-                    ^
-3 errors generated.
+[0m../test.cpp: 在函数‘int main()’中:
+../test.cpp:4:7: 错误： ‘uint128_t’在此作用域中尚未声明
+../test.cpp:4:18: 错误： expected primary-expression before ‘)’ token
+../test.cpp:4:20: 错误： expected ‘)’ before numeric constant
+../test.cpp:5:14: 错误： ‘uint128_t’在此作用域中尚未声明
 ['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx test.cpp -> test_1.o}'not found
 
@@ -133,14 +151,17 @@ int main() {
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
-[2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
-yes
+[0m../test.cpp: 在函数‘int main()’中:
+../test.cpp:4:7: 错误： ‘__uint128_t’在此作用域中尚未声明
+../test.cpp:4:20: 错误： expected primary-expression before ‘)’ token
+../test.cpp:4:22: 错误： expected ‘)’ before numeric constant
+../test.cpp:5:14: 错误： ‘__uint128_t’在此作用域中尚未声明
+['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
+command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx test.cpp -> test_1.o}'not found
 
 -----------------------------------------------
 Checking for high precision time implementation
-128-bit integer
+cairo 128-bit integer
 
 -----------------------------------------------
 Checking for header stdint.h
@@ -155,7 +176,7 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 yes
 
 -----------------------------------------------
@@ -171,7 +192,7 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 yes
 
 -----------------------------------------------
@@ -185,10 +206,8 @@ int main() {
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m../test.cpp:1:10: fatal error: 'sys/inttypes.h' file not found
-#include <sys/inttypes.h>
-         ^
-1 error generated.
+[0m../test.cpp:1:26: 致命错误： sys/inttypes.h：没有那个文件或目录
+编译中断。
 ['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx test.cpp -> test_1.o}'not found
 
@@ -204,10 +223,8 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0mld: library not found for -lrt
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
-['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-lrt']
-command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx_link test_1.o -> testprog}'not found
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-Wl,-Bdynamic', '-lrt']
+yes
 
 -----------------------------------------------
 Checking for header netpacket/packet.h
@@ -220,12 +237,10 @@ int main() {
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m../test.cpp:1:10: fatal error: 'netpacket/packet.h' file not found
-#include <netpacket/packet.h>
-         ^
-1 error generated.
-['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
-command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx test.cpp -> test_1.o}'not found
+[0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
+[2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+yes
 
 -----------------------------------------------
 Checking for header linux/if_tun.h
@@ -238,14 +253,22 @@ int main() {
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m../test.cpp:1:10: fatal error: 'linux/if_tun.h' file not found
-#include <linux/if_tun.h>
-         ^
-1 error generated.
-['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
-command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx test.cpp -> test_1.o}'not found
+[0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
+[2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+yes
 
------------------------------------------------
+---------------------------------------------------
+Checking for pkg-config flags for GTK_CONFIG_STORE 
+ok 
+['/usr/bin/pkg-config', '--cflags', '--libs', 'gtk+-2.0 >= 2.12']: '-pthread -I/usr/include/gtk-2.0 -I/usr/lib/i386-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib/i386-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfreetype -lfontconfig -lgobject-2.0 -lglib-2.0  \n' (exit code 0)
+
+---------------------------------------------------
+Checking for pkg-config flags for LIBXML2 
+ok 
+['/usr/bin/pkg-config', '--cflags', '--libs', 'libxml-2.0 >= 2.6']: '-I/usr/include/libxml2  -lxml2  \n' (exit code 0)
+
+---------------------------------------------------
 Checking for library sqlite3
 ==>
 
@@ -257,14 +280,14 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-lsqlite3']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-Wl,-Bdynamic', '-lsqlite3']
 yes
 
------------------------------------------------
+---------------------------------------------------
 Checking for NSC location 
 not found
 
------------------------------------------------
+---------------------------------------------------
 Checking for header sys/socket.h
 ==>
 #include <sys/socket.h>
@@ -277,10 +300,10 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 yes
 
------------------------------------------------
+---------------------------------------------------
 Checking for header netinet/in.h
 ==>
 #include <netinet/in.h>
@@ -293,33 +316,33 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 yes
 
------------------------------------------------
+---------------------------------------------------
 Checking for program python
   find program=['python'] paths=[] var='PYTHON'
-  -> '/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python'
+  -> '/usr/bin/python'
 
------------------------------------------------
+---------------------------------------------------
 Checking for Python version >= 2.3
-ok 2.7.6
-Configuration returned from '/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python':
-python_prefix = '/Library/Frameworks/Python.framework/Versions/2.7'
+ok 2.7.3
+Configuration returned from '/usr/bin/python':
+python_prefix = '/usr'
 python_SO = '.so'
-python_SYSLIBS = ''
-python_LDFLAGS = '-arch i386 -arch x86_64   -g'
-python_SHLIBS = '-ldl  -framework CoreFoundation'
-python_LIBDIR = '/Library/Frameworks/Python.framework/Versions/2.7/lib'
-python_LIBPL = '/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config'
-INCLUDEPY = '/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7'
+python_SYSLIBS = '-lm'
+python_LDFLAGS = '-Wl,-Bsymbolic-functions -Wl,-z,relro'
+python_SHLIBS = '-lpthread -ldl  -lutil'
+python_LIBDIR = '/usr/lib'
+python_LIBPL = '/usr/lib/python2.7/config'
+INCLUDEPY = '/usr/include/python2.7'
 Py_ENABLE_SHARED = 0
-MACOSX_DEPLOYMENT_TARGET = '10.6'
+MACOSX_DEPLOYMENT_TARGET = ''
 
 
-# Trying LIBDIR: ['/Library/Frameworks/Python.framework/Versions/2.7/lib']
+# Trying LIBDIR: ['/usr/lib']
 
------------------------------------------------
+---------------------------------------------------
 Checking for library python2.7
 ==>
 
@@ -331,16 +354,16 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-framework', 'CoreFoundation', '-L/Library/Frameworks/Python.framework/Versions/2.7/lib', '-lpython2.7', '-ldl']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-Wl,-Bsymbolic-functions', '-Wl,-z,relro', '-L/usr/lib', '-Wl,-Bdynamic', '-lpython2.7', '-lm', '-lpthread', '-ldl', '-lutil']
 yes
 
------------------------------------------------
+---------------------------------------------------
 Checking for program python2.7-config
   find program=['python2.7-config'] paths=[] var='PYTHON_CONFIG'
-  -> '/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7-config'
-Include path for Python extensions (found via python-config --includes): ['/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7']
+  -> '/usr/bin/python2.7-config'
+Include path for Python extensions (found via python-config --includes): ['/usr/include/python2.7']
 
------------------------------------------------
+---------------------------------------------------
 Checking for header Python.h
 ==>
 
@@ -361,9 +384,9 @@ int main()
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/g++', '-O0', '-g0', '-fno-strict-aliasing', '-Idebug', '-I..', '-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/g++', '-O0', '-g0', '-fno-strict-aliasing', '-Idebug', '-I..', '-I/usr/include/python2.7', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-framework', 'CoreFoundation', '-L/Library/Frameworks/Python.framework/Versions/2.7/lib', '-ldl', '-lpython2.7']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog', '-Wl,-Bsymbolic-functions', '-Wl,-z,relro', '-L/usr/lib', '-Wl,-Bdynamic', '-lm', '-lpthread', '-ldl', '-lutil', '-lpython2.7']
 yes
 ==>
 #include <stdio.h>
@@ -373,48 +396,53 @@ int main() { return 0; }
 [1/2] [32mcxx: build/.conf_check_0/test.cc -> build/.conf_check_0/testbuild/debug/test_1.o
 [0m['/usr/bin/g++', '-O0', '-g0', '-fvisibility=hidden', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cc', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
------------------------------------------------
+---------------------------------------------------
 Checking for -fvisibility=hidden support
 yes
 
------------------------------------------------
+---------------------------------------------------
 Checking for pybindgen location 
 not found
 
------------------------------------------------
+---------------------------------------------------
 Checking for Python module pybindgen
 not found
 
------------------------------------------------
+---------------------------------------------------
 Checking for program mpic++
   find program=['mpic++'] paths=[] var='MPI'
   -> ''
 
------------------------------------------------
+---------------------------------------------------
 Checking for program sudo
   find program=['sudo'] paths=[] var='SUDO'
   -> '/usr/bin/sudo'
 
------------------------------------------------
+---------------------------------------------------
 Checking for program hg
   find program=['hg'] paths=[] var='MERCURIAL'
-  -> ''
+  -> '/usr/bin/hg'
 
------------------------------------------------
+---------------------------------------------------
 Checking for program valgrind
   find program=['valgrind'] paths=[] var='VALGRIND'
-  -> ''
+  -> '/usr/bin/valgrind'
+
+---------------------------------------------------
+Checking for pkg-config flags for GSL 
+ok 
+['/usr/bin/pkg-config', '--cflags', '--libs', 'gsl']: ' -lgsl -lgslcblas -lm  \n' (exit code 0)
 ==>
 #include <stdio.h>
 int main() { return 0; }
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cc -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/g++', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cc', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/g++', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DENABLE_GSL', '../test.cc', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
 -------------------------------------------------------
 Checking for -Wno-error=deprecated-declarations support
@@ -425,9 +453,9 @@ int main() { return 0; }
 
 <==
 [1/2] [32mcc: build/.conf_check_0/test.c -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/gcc', '-O0', '-g0', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.c', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/gcc', '-O0', '-g0', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-Idebug', '-I..', '-DNDEBUG', '-DENABLE_GSL', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.c', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcc_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/gcc', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/gcc', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
 -------------------------------------------------------
 Checking for -Wno-error=deprecated-declarations support
@@ -438,9 +466,9 @@ int main() { return 0; }
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cc -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/g++', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cc', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/g++', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DENABLE_GSL', '../test.cc', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
 -------------------------------------------------------
 Checking for -fstrict-aliasing support
@@ -451,9 +479,9 @@ int main() { return 0; }
 
 <==
 [1/2] [32mcc: build/.conf_check_0/test.c -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/gcc', '-O0', '-g0', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.c', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/gcc', '-O0', '-g0', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DENABLE_GSL', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.c', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcc_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/gcc', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/gcc', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
 -------------------------------------------------------
 Checking for -fstrict-aliasing support
@@ -464,9 +492,9 @@ int main() { return 0; }
 
 <==
 [1/2] [32mcxx: build/.conf_check_0/test.cc -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/g++', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cc', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/g++', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DENABLE_GSL', '../test.cc', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/g++', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
 -------------------------------------------------------
 Checking for -Wstrict-aliasing support
@@ -477,9 +505,9 @@ int main() { return 0; }
 
 <==
 [1/2] [32mcc: build/.conf_check_0/test.c -> build/.conf_check_0/testbuild/debug/test_1.o
-[0m['/usr/bin/gcc', '-O0', '-g0', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.c', '-c', '-o', 'debug/test_1.o']
+[0m['/usr/bin/gcc', '-O0', '-g0', '-O0', '-g0', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-Idebug', '-I..', '-DNDEBUG', '-DENABLE_GSL', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.c', '-c', '-o', 'debug/test_1.o']
 [2/2] [33mcc_link: build/.conf_check_0/testbuild/debug/test_1.o -> build/.conf_check_0/testbuild/debug/testprog
-[0m['/usr/bin/gcc', 'debug/test_1.o', '-o', '/Users/chunxiaomu/Documents/LS_DV_Routing/ns-3/build/.conf_check_0/testbuild/debug/testprog']
+[0m['/usr/bin/gcc', 'debug/test_1.o', '-o', '/home/lanlan/ns-3/build/.conf_check_0/testbuild/debug/testprog']
 
 -------------------------------------------------------
 Checking for -Wstrict-aliasing support
