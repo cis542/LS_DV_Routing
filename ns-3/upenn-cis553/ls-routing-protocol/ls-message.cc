@@ -15,7 +15,6 @@
  */
 
 #include "ns3/ls-message.h"
-
 #include "ns3/log.h"
 
 using namespace ns3;
@@ -372,4 +371,3 @@ LSMessage::GetOriginatorAddress (void) const
   return m_originatorAddress;
 }
 
-

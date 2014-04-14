@@ -20,9 +20,6 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-
-
-
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-header.h"
@@ -60,6 +57,7 @@ LSRoutingProtocol::GetTypeId (void)
   ;
   return tid;
 }
+
 
 LSRoutingProtocol::LSRoutingProtocol ()
   : m_auditPingsTimer (Timer::CANCEL_ON_DESTROY)
@@ -529,4 +527,3 @@ LSRoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   m_ipv4 = ipv4;
   m_staticRouting->SetIpv4 (m_ipv4);
 }
-

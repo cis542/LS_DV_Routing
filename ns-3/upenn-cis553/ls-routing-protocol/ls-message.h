@@ -190,4 +190,3 @@ static inline std::ostream& operator<< (std::ostream& os, const LSMessage& messa
 }
 
 #endif
-
