@@ -68,6 +68,12 @@ DVMessage::GetSerializedSize (void) const
       case PING_RSP:
         size += m_message.pingRsp.GetSerializedSize ();
         break;
+      case DCNBS_REQ:
+        size += m_message.pingReq.GetSerializedSize ();
+        break;
+      case DCNBS_RSP:
+        size += m_message.pingRsp.GetSerializedSize ();
+        break;
       default:
         NS_ASSERT (false);
     }
@@ -115,6 +121,12 @@ DVMessage::Serialize (Buffer::Iterator start) const
       case PING_RSP:
         m_message.pingRsp.Serialize (i);
         break;
+      case DCNBS_REQ:
+        m_message.pingReq.Serialize (i);
+        break;
+      case DCNBS_RSP:
+        m_message.pingReq.Serialize (i);
+        break;
       default:
         NS_ASSERT (false);   
     }
@@ -138,6 +150,12 @@ DVMessage::Deserialize (Buffer::Iterator start)
         size += m_message.pingReq.Deserialize (i);
         break;
       case PING_RSP:
+        size += m_message.pingRsp.Deserialize (i);
+        break;
+      case DCNBS_REQ:
+        size += m_message.pingReq.Deserialize (i);
+        break;
+      case DCNBS_RSP:
         size += m_message.pingRsp.Deserialize (i);
         break;
       default:
@@ -258,6 +276,51 @@ DVMessage::PingRsp
 DVMessage::GetPingRsp ()
 {
   return m_message.pingRsp;
+}
+
+
+//DCNBSRsp
+void
+DVMessage::SetDCNBSRsp (Ipv4Address destinationAddress, std::string DCrspMs)
+{
+  if (m_messageType == 0)
+    {
+      m_messageType = DCNBS_RSP;
+    }
+  else
+    {
+      NS_ASSERT (m_messageType == DCNBS_RSP);
+    }
+  m_message.pingRsp.destinationAddress = destinationAddress;
+  m_message.pingRsp.pingMessage = DCrspMs;
+}
+
+DVMessage::PingRsp
+DVMessage::GetDCNBSRsp ()
+{
+  return m_message.pingRsp;
+}
+
+//DCNBSReq
+void
+DVMessage::SetDCNBSReq (Ipv4Address destinationAddress, std::string DCreqMs)
+{
+  if (m_messageType == 0)
+    {
+      m_messageType = DCNBS_REQ;
+    }
+  else
+    {
+      NS_ASSERT (m_messageType == DCNBS_REQ);
+    }
+  m_message.pingReq.destinationAddress = destinationAddress;
+  m_message.pingReq.pingMessage = DCreqMs;
+}
+
+DVMessage::PingReq
+DVMessage::GetDCNBSReq ()
+{
+  return m_message.pingReq;
 }
 
 

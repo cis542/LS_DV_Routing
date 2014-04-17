@@ -290,6 +290,25 @@ DVRoutingProtocol::ProcessCommand (std::vector<std::string> tokens)
 void
 DVRoutingProtocol::DumpNeighbors ()
 {
+  std::string pingMessage = "Hello Neighbors";
+  uint32_t nodeNumber = 0;
+  for (nodeNumber = 0; nodeNumber < 10; ++nodeNumber){
+    Ipv4Address destAddress = ResolveNodeIpAddress (nodeNumber);
+    if (destAddress != Ipv4Address::GetAny ())
+    {
+      uint32_t sequenceNumber = GetNextSequenceNumber ();
+      TRAFFIC_LOG ("Sending DCNBS_REQ to Node: " << nodeNumber << " IP: " << destAddress << " Message: " << pingMessage << " SequenceNumber: " << sequenceNumber);
+      Ptr<PingRequest> pingRequest = Create<PingRequest> (sequenceNumber, Simulator::Now(), destAddress, pingMessage);
+      // Add to ping-tracker
+      m_pingTracker.insert (std::make_pair (sequenceNumber, pingRequest));
+      Ptr<Packet> packet = Create<Packet> ();
+      DVMessage dvMessage = DVMessage (DVMessage::DCNVS_REQ, sequenceNumber, 1, m_mainAddress);
+      dvMessage.SetPingReq (destAddress, pingMessage);
+      packet->AddHeader (dvMessage);
+      BroadcastPacket (packet);
+    }
+  }
+
   STATUS_LOG (std::endl << "**************** Neighbor List ********************" << std::endl
               << "NeighborNumber\t\tNeighborAddr\t\tInterfaceAddr");
   PRINT_LOG ("");
@@ -332,6 +351,12 @@ DVRoutingProtocol::RecvDVMessage (Ptr<Socket> socket)
       case DVMessage::PING_RSP:
         ProcessPingRsp (dvMessage);
         break;
+      case DVMessage::DCNBS_REQ:
+        ProcessDcnbsReq (dvMessage);
+        break;
+      case DVMessage::DCNBS_RSP:
+        ProcessDcnbsRsp (dvMessage);
+        break;
       default:
         ERROR_LOG ("Unknown Message Type!");
         break;
@@ -357,6 +382,23 @@ DVRoutingProtocol::ProcessPingReq (DVMessage dvMessage)
 }
 
 void
+DVRoutingProtocol::ProcessDcnbsReq (DVMessage dvMessage)
+{
+  if (IsOwnAddress (dvMessage.GetPingReq().destinationAddress))
+    {
+      // Use reverse lookup for ease of debug
+      std::string fromNode = ReverseLookup (dvMessage.GetOriginatorAddress ());
+      TRAFFIC_LOG ("Received DCNBS_REQ, From Node: " << fromNode << ", Message: " << dvMessage.GetPingReq().pingMessage);
+      // Send DCNBS Response
+      DVMessage dvResp = DVMessage (DVMessage::DCNBS_RSP, dvMessage.GetSequenceNumber(), 1, m_mainAddress);
+      dvResp.SetDCNBSRsp(dvMessage.GetOriginatorAddress(), dvMessage.GetDCNBSReq().pingMessage);
+      Ptr<Packet> packet = Create<Packet> ();
+      packet->AddHeader (dvResp);
+      BroadcastPacket (packet);
+    }
+}
+
+void
 DVRoutingProtocol::ProcessPingRsp (DVMessage dvMessage)
 {
   // Check destination address
@@ -374,6 +416,28 @@ DVRoutingProtocol::ProcessPingRsp (DVMessage dvMessage)
       else
         {
           DEBUG_LOG ("Received invalid PING_RSP!");
+        }
+    }
+}
+
+void
+DVRoutingProtocol::ProcessDcnbsRsp (DVMessage dvMessage)
+{
+  // Check destination address
+  if (IsOwnAddress (dvMessage.GetPingRsp().destinationAddress))
+    {
+      // Remove from pingTracker
+      std::map<uint32_t, Ptr<PingRequest> >::iterator iter;
+      iter = m_pingTracker.find (dvMessage.GetSequenceNumber ());
+      if (iter != m_pingTracker.end ())
+        {
+          std::string fromNode = ReverseLookup (dvMessage.GetOriginatorAddress ());
+          TRAFFIC_LOG ("Received DCNBS_RSP, From Node: " << fromNode << ", Message: " << dvMessage.GetPingRsp().pingMessage);//it is the same weather change GetPingRsp() to GetDCNBSRsp() or not
+          m_pingTracker.erase (iter);
+        }
+      else
+        {
+          DEBUG_LOG ("Received invalid DCNBS_RSP!");
         }
     }
 }

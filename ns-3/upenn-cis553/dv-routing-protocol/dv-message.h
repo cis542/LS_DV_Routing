@@ -37,6 +37,8 @@ class DVMessage : public Header
       {
         PING_REQ = 1,
         PING_RSP = 2,
+        DCNBS_REQ = 3,
+        DCNBS_RSP = 4,
         // Define extra message types when needed       
       };
 
@@ -116,6 +118,11 @@ class DVMessage : public Header
         Ipv4Address destinationAddress;
         std::string pingMessage;
       };
+    // struct DCNBSReq
+    // {
+    //     //Ipv4Address destinationAddress; // we don't need certain address
+    //     std::string DCreqMs;
+    // };
 
     struct PingRsp
       {
@@ -128,12 +135,20 @@ class DVMessage : public Header
         std::string pingMessage;
       };
 
+    // struct DCNBSRsp
+    // {
+    //     Ipv4Address destinationAddress;
+    //     std::string DCrspMs;
+    // };
+
 
   private:
     struct
       {
         PingReq pingReq;
         PingRsp pingRsp;
+        //DCNBSReq dcnbsReq;
+        //DCNBSRsp dcnbsRsp;
       } m_message;
     
   public:
@@ -158,6 +173,15 @@ class DVMessage : public Header
      *  \param message Payload String
      */
     void SetPingRsp (Ipv4Address destinationAddress, std::string message);
+
+    PingReq GetDCNBSReq();
+    //looks like we don't need to assign destination nor message;
+    void SetDCNBSReq (Ipv4Address destinationAddress, std::string DCreqMs);
+
+    PingRsp GetDCNBSRsp();
+
+    void SetDCNBSRsp (Ipv4Address destinationAddress, std::string DCrspMs)
+
 
 }; // class DVMessage
 
